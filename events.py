@@ -76,7 +76,7 @@ class Events():
                 await message.author.kick()
                 await asyncio.sleep(2)
                 await message.delete()
-        
+
         #The Labs
         elif message.channel.name == "gate":
             if message.content.upper() != "!ACCEPT" and message.content.upper() != "!DECLINE":

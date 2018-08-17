@@ -5,13 +5,13 @@ import random
 import datetime
 import requests
 import json
-from datetime import datetime
+import time
 import wikipedia
 
 class GeneralCommands():
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command()
     async def credits(self, ctx):
         embed = discord.Embed(color=0x363941)
@@ -19,11 +19,10 @@ class GeneralCommands():
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["say", "repeat", "s"])
+    @commands.is_owner()
     async def echo(self, ctx, *, msg: str = None):
         if msg == None:
-            emb = discord.Embed(color=0xE73C24)
-            emb.add_field(name="Error", value="You didn't give me anything to echo")
-            await ctx.send(embed=emb)
+            await ctx.send(":x: - You forgot to give me something to say. . .")
         else:
             await ctx.send(msg)
 
@@ -35,15 +34,12 @@ class GeneralCommands():
     @commands.command(aliases=["jokes"])
     async def joke(self, ctx):
         joke = random.choice(["What do you call a bee that can’t make up its mind?\nA Maybe", "What do you call a pig that does karate?\nPork chop", "I’m only friends with 25 letters of the alphabet.\nI don’t know Y.", "Why did the computer show up late to work?\nIt had a hard drive", "Autocorrect has become my worst enema.", "Thanks to autocorrect, 1 in 5 children will be getting a visit from Satan this Christmas.", "Don’t you hate it when someone answers their own questions?\nI do.", "If I got 50 cents for every failed math exam, I’d have $ 6.30 now.", "I wrote a song about a tortilla. Well actually, it’s more of a wrap.", "My girlfriend and I often laugh about how competitive we are. But I laugh more", "You", "Your wifi", "Do you think I'm a bad mom Peter?\nMy name is Paul", "Why can't a blonde dial 911?\nShe can't find eleven", "What do you call a belt made of watches?\nA waist of time"])
-        embed = discord.Embed(color=0xE9A72F)
-        embed.add_field(name="Coming right up", value=f"{joke}")
-        await ctx.send(embed=embed)
+        await ctx.send(joke)
 
     @commands.command(name="8ball")
     async def _ball(self, ctx):
         ball = random.choice(["Yes, I agree", "Nope.", "Hmm, why not", "Well, if you say so", "Most likely", "Not happening", "Never happening", "Not a chance", "Maybe", "Big Shaq is the best mathematician in the world. That's one thing i can agree on", "Can't really give my opinion on that", "No, not imo, but whatever tickles your pickle"])
-        embed = discord.Embed(title="8ball!", description=f"{ball}", color=0xE9A72F)
-        await ctx.send(embed=embed)
+        await ctx.send(ball)
 
     @commands.command(aliases=["fortnite", "fort", "fn"])
     async def ftn(self, ctx, platform = None,*, player = None):
@@ -243,7 +239,7 @@ class GeneralCommands():
             none.add_field(name="Users Highest role:", value=ctx.message.author.top_role.mention, inline=True)
             none.add_field(name="Discriminator:", value=f"#{ctx.message.author.discriminator}", inline=True)
             if ctx.message.author.activity == None:
-                none.add_field(name="Playing:", value="Not playing")
+                none.add_field(name="Playing:", value="Not playing :thinking:")
             else:
                 none.add_field(name="Playing:", value=ctx.message.author.activity.name, inline=True)
             none.add_field(name="Joined", value=str(ctx.message.author.joined_at)[:19], inline=True)
@@ -287,11 +283,12 @@ class GeneralCommands():
     async def botinfo(self, ctx):
         embed = discord.Embed(color=0xE9A72F)
         embed.add_field(name="Guilds:", value=len(ctx.bot.guilds))
-        embed.add_field(name="Members:", value=len(ctx.bot.users))
+        embed.add_field(name="Members:", value=len(ctx.bot.users), inline=False)
         embed.add_field(name="Creator:", value="<@322449414142558208>", inline=False)
+        embed.add_field(name="Libary:", value="Discord.py")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["si", "serverinformation"])
+    @commands.command(aliases=["si", "serverinformation", "member", "membercount", "members"])
     async def serverinfo(self, ctx):
         embed = discord.Embed(color=0xE9A72F)
         embed.set_author(icon_url=ctx.message.guild.icon_url, name="{}'s info".format(ctx.message.guild.name))
@@ -299,8 +296,9 @@ class GeneralCommands():
         embed.add_field(name="ID:", value=ctx.message.guild.id, inline=True)
         embed.add_field(name="Region:", value=ctx.message.guild.region, inline=True)
         embed.add_field(name="Members:", value=len(ctx.message.guild.members), inline=True)
-        embed.add_field(name="Humans:", value=ctx.message.guild.member_count, inline=True)
         bot_count = sum(m.bot for m in ctx.guild.members)
+        human_count = len(ctx.message.guild.members) - bot_count
+        embed.add_field(name="Humans:", value=human_count, inline=True)
         embed.add_field(name="Bots:", value=bot_count, inline=True)
         embed.add_field(name="Roles:", value=len(ctx.message.guild.roles), inline=True)
         embed.add_field(name="Text channels:", value=len(ctx.guild.text_channels))
@@ -312,6 +310,14 @@ class GeneralCommands():
         embed.set_footer(icon_url=ctx.message.guild.icon_url, text=f"{ctx.message.guild.name} | By: {ctx.guild.owner.name}#{ctx.guild.owner.discriminator}")
         await ctx.send(embed=embed)
 
+    @commands.command(aliases=["lookup"])
+    async def google(self, ctx, *, googlesearch: str = None):
+        if googlesearch == None:
+            await ctx.send(":x: - You didn't give me anything to google *smh*")
+        else:
+            string = f"https://www.google.com/search?q={googlesearch}"
+            await ctx.send(string.replace(" ", "+"))
+
     @commands.command(aliases=["serverroles"])
     async def roles(self, ctx):
         role_mentions = str([role.mention for role in ctx.message.guild.roles]).replace("[", "").replace("]", "").replace("'", "").replace(f"{ctx.message.guild.default_role.mention}, ", "@everyone, ")
@@ -319,11 +325,6 @@ class GeneralCommands():
         embed.set_author(icon_url=ctx.message.guild.icon_url, name="List of roles in {}".format(ctx.message.guild.name))
         embed.add_field(name="Roles:", value=role_mentions, inline=True)
         embed.set_thumbnail(url=ctx.guild.icon_url)
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=["membercount", "member"])
-    async def members(self, ctx):
-        embed = discord.Embed(title="👥Members in this server:", description=f"{len(ctx.message.guild.members)}", color=0xE9A72F)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["profilepicture", "avatar"])
@@ -339,61 +340,31 @@ class GeneralCommands():
     
     @commands.command(aliases=["coin", "flipacoin"])
     async def coinflip(self, ctx):
-        flip = random.choice(["It's a Heads💰", "It's a Tails💰"])
-        embed = discord.Embed(title="Coinflip", description=f"{flip}", color=0xE9A72F)
-        await ctx.send(embed=embed)
+        flip = random.choice(["The coin landed on heads💰", "The coin landed on tails💰"])
+        await ctx.send(f"{flip}")
 
-    @commands.command(aliases=["roll", "dice"])
-    async def diceroll(self, ctx):
-        roll = random.choice(['Its a 1🎲', 'Its a 2🎲', 'Its a 3🎲', 'Its a 4🎲', 'Its a 5🎲', 'Its a 6🎲'])
-        embed = discord.Embed(title="Dice", description=f"{roll}", color=0xE9A72F)
-        await ctx.send(embed=embed)
-    
     @commands.command(aliases=["pong", "latency"])
     async def ping(self, ctx):
-        resp = await ctx.send('Pong! Loading...')
-        diff = resp.created_at - ctx.message.created_at
-        await resp.edit(embed = discord.Embed(title="Pong! :ping_pong:", description=f'Pong! That took {100*diff.total_seconds():.1f}ms.', color=0xffb30f))
+        # Time the time required to send a message first.
+        # This is the time taken for the message to be sent, awaited, and then 
+        # for discord to send an ACK TCP header back to you to say it has been
+        # received; this is dependant on your bot's load (the event loop latency)
+        # and generally how shit your computer is, as well as how badly discord
+        # is behaving.
+        start = time.monotonic()
+        msg = await ctx.send('Pinging...')
+        millis = (time.monotonic() - start) * 1000
+
+        # Since sharded bots will have more than one latency, this will average them if needed.
+        heartbeat = ctx.bot.latency * 1000
+
+        await msg.edit(content=f'Heartbeat: {heartbeat:,.2f}ms\nACK: {millis:,.2f}ms.')
     
-    @commands.command(aliases=["waffle"])
+    @commands.command(aliases=["waffle", "gif"])
     async def wafflegif(self, ctx):
         gif = random.choice(["https://i.imgur.com/ZYtYt5O.gif", "https://i.imgur.com/hffKEIn.gif", "https://i.imgur.com/x9mg3Sj.gif", "https://i.imgur.com/0zlVS7w.gif", "https://i.imgur.com/ez4ZsMS.gif", "https://i.imgur.com/87Sl6.gif", "https://i.imgur.com/UnKylQk.gif", "https://i.imgur.com/S0MekgX.gif", "https://i.imgur.com/KieFRUb.gif", "https://i.imgur.com/3YrdkCz.gif", "https://i.imgur.com/8pbG99c.gif"])
         embed= discord.Embed(color=0xE9a72F)
         embed.set_image(url=f"{gif}")
-        embed.set_footer(icon_url="https://i.pinimg.com/originals/07/b6/45/07b645907fcc181adf904c227d7320c4.gif", text="Wafflebot By Alpha#5960")
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=["xmas"])
-    async def christmas(self, ctx):
-        now=datetime.datetime.utcnow()
-        xmas=datetime.datetime(now.year, 12, 25)
-        if xmas<now:
-            xmas=xmas.replace(year=now.year+1)
-        delta=xmas-now
-        weeks, remainder=divmod(int(delta.total_seconds()), 604800)
-        days, remainder2=divmod(remainder, 86400)
-        hours, remainder3=divmod(remainder2, 3600)
-        minutes, seconds=divmod(remainder3, 60)
-        embed=discord.Embed(color=0xE9A72F)
-        embed.add_field(name=":christmas_tree:Time left until Christmas:christmas_tree:", value=f"{weeks} weeks, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds.")
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=["devbday", "bday", "birthday"])
-    async def ownerbday(self, ctx):
-        now=datetime.datetime.utcnow()
-        bday1 = now.year + 1
-        bday=datetime.datetime(bday1, 2, 25)
-        if bday<now:
-            bday=bday.replace(year=now.year+1)
-        delta=bday-now
-        y, remainder4=divmod(int(delta.total_seconds()), 31536025)
-        months, remainder5=divmod(remainder4, 2592000)
-        weeks, remainder=divmod(remainder5, 604800)
-        days, remainder2=divmod(remainder, 86400)
-        hours, remainder3=divmod(remainder2, 3600)
-        minutes, seconds=divmod(remainder3, 60)
-        embed=discord.Embed(colour = discord.Colour(0xE9A72F))
-        embed.add_field(name="🎁Time left until Bot Owner's Birthday🎁", value=f"{y} year, {months} months, {weeks} weeks, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds.")
         owneravi = self.bot.get_user(322449414142558208)
         embed.set_footer(icon_url=owneravi.avatar_url, text="Wafflebot by Alpha#5960")
         await ctx.send(embed=embed)
@@ -439,7 +410,6 @@ class GeneralCommands():
     async def wiki(self, ctx, *, search: str = None):
         if search == None:
             error = discord.Embed(title="Error:", description="You didn't sepcify a search request\n**Usage:** `w/rps [search]`\n**Example:** `w/wiki sausage`", color=0xE73C24)
-            error.set_footer(text="Thanks to COLAMAroro#0001 for helping me out with this command :)")
             await ctx.send(embed=error)
         else:
             print("I'm called!")
