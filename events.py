@@ -51,12 +51,41 @@ class Events():
             await self.bot.get_channel(444483955119357962).send(embed=embed)
             role = discord.utils.get(member.guild.roles, id=444490535076626442)
             await member.add_roles(role)
+        if member.guild.id == 414493368861589514:
+            embed = discord.Embed(title="New User Joined", colour=0x15c513)
+            embed.add_field(name="Name", value=f"{member.name}")
+            embed.add_field(name="Joined", value=str(member.joined_at)[:19])
+            embed.add_field(name="Created at", value=str(member.created_at)[:19])
+            embed.add_field(name="User ID", value=member.id)
+            embed.add_field(name="User Discriminator", value=f"#{member.discriminator}")
+            if member is self.bot:
+                embed.add_field(name="Bot", value="True")
+            embed.add_field(name="Bot", value="False")
+            await self.bot.get_channel(430089438924767253).send(embed=embed)
         else:
             return
 
+    async def on_message_edit(self, before, after):
+        if after.guild.id == 414493368861589514:
+            if after.author.id == 430365624217108484:
+                return
+            else:
+                EditedEmbed = discord.Embed(title="Message Edit", description="**{}** edited a Message In <#{}>.\n**Prior Contents:** `{}`\n**After Contents:** `{}`".format(after.author, after.channel.id, before.content, after.content), colour=0x15c513)
+                await self.bot.get_channel(430089438924767253).send(embed=EditedEmbed)
+        else: 
+            return
+
+    async def on_message_delete(self, message):
+        if message.guild.id == 414493368861589514:
+            if message.author.id == 430365624217108484:
+                return
+            else:
+                embed = discord.Embed(title="Message Deletion", description=f"**{message.author}** deleted a message in <#{message.channel.id}>\n**Content:** `{message.content}`", colour=0x15c513)
+                await self.bot.get_channel(430089438924767253).send(embed=embed)
+
     async def on_message(self, message):
         #WaffleBot Server
-        if message.channel.name == "rules":
+        if message.channel.id == 417743778925903872:
             if message.content.upper() != "!ACCEPT" and message.content.upper() != "!DECLINE":
                 if message.author.id == 322449414142558208:
                     pass
@@ -76,62 +105,6 @@ class Events():
                 await message.author.kick()
                 await asyncio.sleep(2)
                 await message.delete()
-
-        #The Labs
-        elif message.channel.name == "gate":
-            if message.content.upper() != "!ACCEPT" and message.content.upper() != "!DECLINE":
-                await message.delete()
-            elif message.content.upper() == "!ACCEPT":
-                noob = discord.utils.get(message.guild.roles, id=449600245031108608)
-                registered = discord.utils.get(message.guild.roles, id=449600245047754774)
-                await message.author.add_roles(noob, registered)
-                embed = discord.Embed(color=0xE9A72F)
-                channel = self.bot.get_channel(449606135129833476)
-                em = discord.Embed(title="User Registered", description=f"{message.author.name} succesfully registered!", colour=0x55FF55)
-                em.set_footer(text="We now have %s members!" % (len(message.guild.members)))
-                await channel.send(embed=em)
-                await asyncio.sleep(2)
-                await message.delete()
-
-        #The Labs lock
-        elif message.content.upper().startswith("!LOCK"):
-            if "Staff" in [role.name for role in message.author.roles]:
-                await message.delete()
-                default = discord.utils.get(message.guild.roles, name="Registered")
-                perms = default.permissions
-                perms.send_messages = False
-                try:
-                    time = int(message.content.split()[1]) * 60 #time in minutes (seconds -> minutes)
-                except IndexError: #Saves us having to check the len() of the args, also means we don't have to make redundent code here 
-                    time = 0
-                await default.edit(permissions=perms)
-                if time == 0: #Basically if it = 0 then the lock is perm until someoone !unlock's it
-                    nEmbed = discord.Embed(title="Server Locked", description="The server has been locked by %s" % (message.author.mention), colour=0xFF5555)
-                else:
-                    nEmbed = discord.Embed(title="Server Locked", description="The server has been locked by %s for **%s minutes**" % (message.author.mention, str(time/60)), colour=0xFF5555)
-                nEmbed.set_footer(text="This bot is not capable of enforcing Discord Terms of Service but may submit statistical data to Trust & Safety using data collected by Guardian")
-                logChannel = self.bot.get_channel(449614348122587136)
-                notice = await message.channel.send(embed=nEmbed)
-                await logChannel.send(embed=nEmbed)
-                if not time == 0:
-                    await asyncio.sleep(time)
-                    perms.send_messages = True
-                    await default.edit(permissions=perms)
-                    await notice.delete()
-
-        #The Labs lock
-        elif message.content.upper().startswith("!UNLOCK"):
-            if "Staff" in [role.name for role in message.author.roles]:
-                await message.delete()
-                default = discord.utils.get(message.guild.roles, name="Registered")
-                perms = default.permissions
-                perms.send_messages = True
-                await default.edit(permissions=perms)
-                nEmbed = discord.Embed(title="Server Unlocked", description="The server has been unlocked by %s" % (message.author.mention), colour=0x55FF55)
-                nEmbed.set_footer(text="This bot is not capable of enforcing Discord Terms of Service but may submit statistical data to Trust & Safety using data collected by Guardian")
-                logChannel = self.bot.get_channel(449614348122587136)
-                notice = await message.channel.send(embed=nEmbed)
-                await logChannel.send(embed=nEmbed)
 
         elif message.content.upper().startswith("BIG SHAQ"):
             await message.channel.send(random.choice(["2 + 2 = 4 - 1 that's 3 quick maths",
