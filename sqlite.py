@@ -1,3 +1,5 @@
+#This cog is just me trying to learn SQL
+
 import sqlite3
 
 conn = sqlite3.connect("database.db")
