@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 import asyncio
 import random
-import inspect
+import inspect #Used for the source command
 
-class Staff():
+class Staff:
     def __init__(self, bot):
         self.bot = bot
 
@@ -93,7 +93,7 @@ class Staff():
             await asyncio.sleep(10)
             await test.delete()
 
-    @commands.command(aliases=["kill", "quit", "logout"])
+    @commands.command(aliases=["kill", "quit", "logout", "kys"])
     async def shutdown(self, ctx):
         if ctx.message.author.id == 322449414142558208:
             embed = discord.Embed(title="Shutting down...", description="The bot was successfully shut down", color=0x15c513)

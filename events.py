@@ -2,18 +2,20 @@ import discord
 from discord.ext import commands
 import asyncio
 import random
+import traceback
 
 class Events():
     def __init__(self, bot):
         self.bot = bot
 
     async def on_command_error(self, ctx, error):
+        await self.bot.get_channel(491258907050639390).send(f"Command: `{ctx.message.content}` ```{error}```")
         if ctx.cog == '':
             return
-        if isinstance(error, commands.CommandNotFound):
-            embed = discord.Embed(color=0xE73C24)
-            embed.add_field(name="Houston, we have a problem:", value="I couldn't find the command you were looking for, try **w/help**")
-            await ctx.send(embed=embed)
+        elif isinstance(error, commands.CommandNotFound):
+            #embed = discord.Embed(color=0xE73C24)
+            #embed.add_field(name="Houston, we have a problem:", value="I couldn't find the command you were looking for, try **w/help**")
+            #await ctx.send(embed=embed)
             print(error)
             await ctx.message.add_reaction(emoji="❓")
         elif error.__cause__.__class__.__name__ == 'Forbidden':
@@ -125,7 +127,7 @@ class Events():
                 await message.channel.send("**No Dabbing Allowed <o/**")
             
         if message.guild.me in message.mentions:
-            embed = discord.Embed(description=f"**Hey {message.author.mention}!** Checkout my help command by doing: `w/help`", color=0xE9A72F)
+            embed = discord.Embed(description=f"**Hey {message.author.mention}!**\nCheckout my help command by doing: `w/help`", color=0xE9A72F)
             await message.channel.send(embed=embed)
 
 def setup(bot):

@@ -3,12 +3,16 @@ from discord.ext import commands
 import asyncio
 import random
 import datetime
-import requests
+import requests #Usad for the fortnite command
 import json
 import time
 import wikipedia
+from datetime import timedelta
+from time import monotonic
+import pyspeedtest
+st = pyspeedtest.SpeedTest()
 
-class GeneralCommands():
+class GeneralCommands:
     def __init__(self, bot):
         self.bot = bot
 
@@ -26,11 +30,6 @@ class GeneralCommands():
         else:
             await ctx.send(msg)
 
-    @commands.command(aliases=["reaction"])
-    async def react(self, ctx):
-        await ctx.message.add_reaction(emoji="👍🏼")
-        await ctx.message.add_reaction(emoji="👎🏼")
-    
     @commands.command(aliases=["jokes"])
     async def joke(self, ctx):
         joke = random.choice(["What do you call a bee that can’t make up its mind?\nA Maybe", "What do you call a pig that does karate?\nPork chop", "I’m only friends with 25 letters of the alphabet.\nI don’t know Y.", "Why did the computer show up late to work?\nIt had a hard drive", "Autocorrect has become my worst enema.", "Thanks to autocorrect, 1 in 5 children will be getting a visit from Satan this Christmas.", "Don’t you hate it when someone answers their own questions?\nI do.", "If I got 50 cents for every failed math exam, I’d have $ 6.30 now.", "I wrote a song about a tortilla. Well actually, it’s more of a wrap.", "My girlfriend and I often laugh about how competitive we are. But I laugh more", "You", "Your wifi", "Do you think I'm a bad mom Peter?\nMy name is Paul", "Why can't a blonde dial 911?\nShe can't find eleven", "What do you call a belt made of watches?\nA waist of time"])
@@ -283,9 +282,19 @@ class GeneralCommands():
     async def botinfo(self, ctx):
         embed = discord.Embed(color=0xE9A72F)
         embed.add_field(name="Guilds:", value=len(ctx.bot.guilds))
-        embed.add_field(name="Members:", value=len(ctx.bot.users), inline=False)
-        embed.add_field(name="Creator:", value="<@322449414142558208>", inline=False)
+        embed.add_field(name="Members:", value=len(ctx.bot.users))
+        embed.add_field(name="Creator:", value="<@322449414142558208>")
         embed.add_field(name="Libary:", value="Discord.py")
+        text_channel = 0
+        for i in ctx.bot.guilds:
+            for i in ctx.message.guild.text_channels:
+                text_channel += 1
+        embed.add_field(name="Text Channels:", value=text_channel)
+        voice_channel = 0
+        for i in ctx.bot.guilds:
+            for i in ctx.message.guild.voice_channels:
+                voice_channel += 1
+        embed.add_field(name="Voice Channels:", value=voice_channel)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["si", "serverinformation", "member", "membercount", "members"])
@@ -327,14 +336,20 @@ class GeneralCommands():
         embed.set_thumbnail(url=ctx.guild.icon_url)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def memberroles(self, ctx):
+        role_mentions = str([role.mention for role in ctx.message.author.roles]).replace("[", "").replace("]", "").replace("'", "").replace("@everyone", "everyone")
+        E = discord.Embed(description=role_mentions, colour=0xE9A72F)
+        await ctx.send(embed=E)
+
     @commands.command(aliases=["profilepicture", "avatar"])
     async def pfp(self, ctx, user: discord.Member = None):
         if user == None:
-            emb = discord.Embed(title="Profile Picture of {}".format(ctx.message.author.name), color=0xE9A72F)
+            emb = discord.Embed(title="Profile Picture of {}".format(ctx.message.author.name), color=0x363941)
             emb.set_image(url=ctx.message.author.avatar_url)
             await ctx.send(embed=emb)
         else:
-            embed = discord.Embed(title="Profile Picture of {}".format(user.name), color=0xE9A72F)
+            embed = discord.Embed(title="Profile Picture of {}".format(user.name), color=0x363941)
             embed.set_image(url=user.avatar_url)
             await ctx.send(embed=embed)
     
@@ -345,20 +360,12 @@ class GeneralCommands():
 
     @commands.command(aliases=["pong", "latency"])
     async def ping(self, ctx):
-        # Time the time required to send a message first.
-        # This is the time taken for the message to be sent, awaited, and then 
-        # for discord to send an ACK TCP header back to you to say it has been
-        # received; this is dependant on your bot's load (the event loop latency)
-        # and generally how shit your computer is, as well as how badly discord
-        # is behaving.
-        start = time.monotonic()
-        msg = await ctx.send('Pinging...')
-        millis = (time.monotonic() - start) * 1000
+        start = time.perf_counter()
+        message = await ctx.send('Ping...')
+        end = time.perf_counter()
+        duration = (end - start) * 1000
 
-        # Since sharded bots will have more than one latency, this will average them if needed.
-        heartbeat = ctx.bot.latency * 1000
-
-        await msg.edit(content=f'Heartbeat: {heartbeat:,.2f}ms\nACK: {millis:,.2f}ms.')
+        await message.edit(content='Pong! {:.2f}ms :ping_pong: '.format(duration))
     
     @commands.command(aliases=["waffle", "gif"])
     async def wafflegif(self, ctx):
