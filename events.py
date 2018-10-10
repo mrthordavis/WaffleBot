@@ -4,36 +4,47 @@ import asyncio
 import random
 import traceback
 
-class Events():
+class Events:
     def __init__(self, bot):
         self.bot = bot
 
     async def on_command_error(self, ctx, error):
-        await self.bot.get_channel(491258907050639390).send(f"Command: `{ctx.message.content}` ```{error}```")
-        if ctx.cog == '':
-            return
+        print(error)
+        error = error.__cause__ or error
+        await self.bot.get_channel(491258907050639390).send(f"Command: `{ctx.message.content}`\nServer: `{ctx.message.guild.name}`\nChannel: `{ctx.message.channel}`\nAuthor: `{ctx.message.author}` ```{error}```")
+        if isinstance(error, discord.Forbidden):
+            if "admin" in str(ctx.command):
+                return
+            else:
+                await ctx.send(":x: - I don't have enough perms to execute that command")
+
         elif isinstance(error, commands.CommandNotFound):
-            #embed = discord.Embed(color=0xE73C24)
-            #embed.add_field(name="Houston, we have a problem:", value="I couldn't find the command you were looking for, try **w/help**")
-            #await ctx.send(embed=embed)
-            print(error)
-            await ctx.message.add_reaction(emoji="❓")
-        elif error.__cause__.__class__.__name__ == 'Forbidden':
-            embedd = discord.Embed(title="Error:", description="Looks like I don't have the right perms to execute this command, please make sure I have the perms needed", color=0xE73C24)
-            await ctx.send(embed=embedd)
+            #Commands I'm reworking
+            if "warn" in str(ctx.command):
+                await ctx.send(":x: - This command is currently getting reworked")
+            elif "clearwarns" in str(ctx.command):
+                await ctx.send(":x: - This command is currently getting reworked")
+            elif "mute" in str(ctx.command):
+                await ctx.send(":x: - This command is currently getting reworked")
+            elif "unmute" in str(ctx.command):
+                await ctx.send(":x: - This command is currently getting reworked")
+            else:
+                await ctx.message.add_reaction(emoji="❓")
+                print(f"I couldn't find the command named: {ctx.message.content}")
+
         elif isinstance(error, commands.MissingPermissions):
-            error = discord.Embed(color=0xE73C24)
-            error.add_field(name="Error:", value="You don't have permission to do that!")
-            await ctx.send(embed=error)
-            print(error)
+            await ctx.send(":x: - You don't have enough perms to execute that command")
+
         elif isinstance(error, commands.NotOwner):
-            await ctx.send("**You do not own this bot**")
-        else:
-            print(error)
+            await ctx.send(":x: - **You do not own this bot**")
 
     async def on_guild_channel_create(self, channel):
-        await channel.send("First!")
-        
+        #Needs testing
+        if channel.me.guild_permissions.administrator:
+            await channel.send("First!")
+        else:
+            return
+
     async def on_guild_join(self, guild):
         embed = discord.Embed(description=f"**{guild} successfully added me**", color=0x15c513)
         embed.set_footer(text=f"I'm currently in {len(self.bot.guilds)} guilds")
@@ -66,7 +77,8 @@ class Events():
             await self.bot.get_channel(430089438924767253).send(embed=embed)
         else:
             return
-
+    
+    #This is unnecessary and will only flood your logs channel
     async def on_message_edit(self, before, after):
         if after.guild.id == 414493368861589514:
             if after.author.id == 430365624217108484:
@@ -118,13 +130,6 @@ class Events():
                                                                     "Skidika-pap-pap",
                                                                     "No ketchup, just sauce, raw sauce",
                                                                     "Rice Krispies, hold tight my girl, Whitney"])) #Add more commands
-
-        elif message.content.upper().startswith("DAB"):
-            if message.author.id == 322449414142558208:
-                pass
-            else:
-                await message.delete()
-                await message.channel.send("**No Dabbing Allowed <o/**")
             
         if message.guild.me in message.mentions:
             embed = discord.Embed(description=f"**Hey {message.author.mention}!**\nCheckout my help command by doing: `w/help`", color=0xE9A72F)

@@ -36,9 +36,12 @@ class GeneralCommands:
         await ctx.send(joke)
 
     @commands.command(name="8ball")
-    async def _ball(self, ctx):
-        ball = random.choice(["Yes, I agree", "Nope.", "Hmm, why not", "Well, if you say so", "Most likely", "Not happening", "Never happening", "Not a chance", "Maybe", "Big Shaq is the best mathematician in the world. That's one thing i can agree on", "Can't really give my opinion on that", "No, not imo, but whatever tickles your pickle"])
-        await ctx.send(ball)
+    async def _ball(self, ctx, arg = None):
+        if arg == None:
+            await ctx.send(":x: - You forgot to give me something predict")
+        else:
+            ball = random.choice(["Yes, I agree", "Nope.", "Hmm, why not", "Well, if you say so", "Most likely", "Not happening", "Never happening", "Not a chance", "Maybe", "Big Shaq is the best mathematician in the world. That's one thing i can agree on", "Can't really give my opinion on that", "No, not imo, but whatever tickles your pickle"])
+            await ctx.send(ball)
 
     @commands.command(aliases=["fortnite", "fort", "fn"])
     async def ftn(self, ctx, platform = None,*, player = None):
@@ -167,64 +170,67 @@ class GeneralCommands:
             #await msg.delete()
             #for embed in list_of_embeds:
                 #await ctx.send(embed=embed)
-        else:
-            
-            send = await ctx.send(embed=embed)
-            await msg.delete()
+        if ctx.guild.me.guild_permissions.add_reactions:
+                
+                send = await ctx.send(embed=embed)
+                await msg.delete()
 
-            def check(reac, user):
-                return user == ctx.author and str(
-                    reac.emoji) == "▶" and reac.message.id == send.id or user == ctx.author and str(
-                    reac.emoji) == "◀" and reac.message.id == send.id or user == ctx.author and str(
-                    reac.emoji) == "🇽" and reac.message.id == send.id
+                def check(reac, user):
+                    return user == ctx.author and str(
+                        reac.emoji) == "▶" and reac.message.id == send.id or user == ctx.author and str(
+                        reac.emoji) == "◀" and reac.message.id == send.id or user == ctx.author and str(
+                        reac.emoji) == "🇽" and reac.message.id == send.id
 
-            await send.add_reaction(emoji="◀")
-            await send.add_reaction(emoji="🇽")
-            await send.add_reaction(emoji="▶")
-            counter = 0
-            for each in range(0, 30001):
-                try:
-                    reac, user = await self.bot.wait_for('reaction_add', check=check, timeout=0.01)
-                    if counter <= 0:
-                        counter = 0
-                        await send.remove_reaction("◀", user)
-                    if counter >= 4:
-                        counter = 3
-                        await send.remove_reaction("▶", user)
-                    if "▶" in str(reac.emoji) and user == ctx.author and "▶" in str(reac.message.reactions):
-                        counter += 1
-                        if counter == 1:
-                            await send.remove_reaction(reac, user)
-                            #await send.edit(embed=None)
-                            await send.edit(embed=duo)
-                        if counter == 2:
-                            await send.remove_reaction(reac, user)
-                            #await send.edit(embed=None)
-                            await send.edit(embed=squad)
-                    elif "◀" in str(reac.emoji) and user == ctx.author and "◀" in str(reac.message.reactions):
-                        counter -= 1
-                        if counter == 0:
-                            await send.remove_reaction(reac, user)
-                            #await send.edit(embed=None)
-                            await send.edit(embed=embed)
-                        if counter == 1:
-                            await send.remove_reaction(reac, user)
-                            #await send.edit(embed=None)
-                            await send.edit(embed=duo)
-                        if counter == 2:
-                            await send.remove_reaciton(reac, user)
-                            await send.add_reaction("▶")
-                            #await send.edit(embed=None)
-                            await send.edit(embed=squad)
-                    elif "🇽" in str(reac.emoji):
-                        try:
-                            await send.delete()
-                            await ctx.message.delete()
-                            break
-                        except discord.errors.NotFound:
-                            pass
-                except asyncio.TimeoutError:
-                    pass
+                await send.add_reaction(emoji="◀")
+                await send.add_reaction(emoji="🇽")
+                await send.add_reaction(emoji="▶")
+                counter = 0
+                for each in range(0, 30001):
+                    try:
+                        reac, user = await self.bot.wait_for('reaction_add', check=check, timeout=0.01)
+                        if counter <= 0:
+                            counter = 0
+                            await send.remove_reaction("◀", user)
+                        if counter >= 4:
+                            counter = 3
+                            await send.remove_reaction("▶", user)
+                        if "▶" in str(reac.emoji) and user == ctx.author and "▶" in str(reac.message.reactions):
+                            counter += 1
+                            if counter == 1:
+                                await send.remove_reaction(reac, user)
+                                #await send.edit(embed=None)
+                                await send.edit(embed=duo)
+                            if counter == 2:
+                                await send.remove_reaction(reac, user)
+                                #await send.edit(embed=None)
+                                await send.edit(embed=squad)
+                        elif "◀" in str(reac.emoji) and user == ctx.author and "◀" in str(reac.message.reactions):
+                            counter -= 1
+                            if counter == 0:
+                                await send.remove_reaction(reac, user)
+                                #await send.edit(embed=None)
+                                await send.edit(embed=embed)
+                            if counter == 1:
+                                await send.remove_reaction(reac, user)
+                                #await send.edit(embed=None)
+                                await send.edit(embed=duo)
+                            if counter == 2:
+                                await send.remove_reaciton(reac, user)
+                                await send.add_reaction("▶")
+                                #await send.edit(embed=None)
+                                await send.edit(embed=squad)
+                        elif "🇽" in str(reac.emoji):
+                            try:
+                                await send.delete()
+                                await ctx.message.delete()
+                                break
+                            except discord.errors.NotFound:
+                                pass
+                    except asyncio.TimeoutError:
+                        pass
+        if not ctx.guild.me.guild_permissions.add_reactions:
+            for embed in list_of_embeds:
+                await ctx.send(embed=embed)
 
     @commands.command(aliases=["ui", "userinfo"])
     async def info(self, ctx, user: discord.Member = None):
@@ -233,7 +239,10 @@ class GeneralCommands:
             none.set_author(icon_url=ctx.message.author.avatar_url, name="Here's some info about {}".format(ctx.message.author.name))
             none.set_thumbnail(url=ctx.message.author.avatar_url)
             none.add_field(name="Name:", value=ctx.message.author.name, inline=True)
-            none.add_field(name="Status:", value=ctx.message.author.status, inline=True)
+            roles = 0
+            for ctx.role in ctx.message.author.roles:
+                roles += 1
+            none.add_field(name="Users Roles:", value=roles, inline=True)
             none.add_field(name="Users ID:", value=ctx.message.author.id, inline=True)
             none.add_field(name="Users Highest role:", value=ctx.message.author.top_role.mention, inline=True)
             none.add_field(name="Discriminator:", value=f"#{ctx.message.author.discriminator}", inline=True)
@@ -249,7 +258,10 @@ class GeneralCommands:
             embed.set_author(icon_url=user.avatar_url, name="Here's some info about {}".format(user.name))
             embed.set_thumbnail(url=user.avatar_url)
             embed.add_field(name="Name:", value=user.name, inline=True)
-            embed.add_field(name="Status:", value=user.status, inline=True)
+            roles = 0
+            for ctx.role in user.roles:
+                roles += 1
+            embed.add_field(name="Users roles", value=roles, inline=True)
             embed.add_field(name="Users ID:", value=user.id, inline=True)
             embed.add_field(name="Users Highest role:", value=user.top_role.mention, inline=True)
             embed.add_field(name="Discriminator:", value=f"#{user.discriminator}", inline=True)
@@ -338,7 +350,7 @@ class GeneralCommands:
 
     @commands.command()
     async def memberroles(self, ctx):
-        role_mentions = str([role.mention for role in ctx.message.author.roles]).replace("[", "").replace("]", "").replace("'", "").replace("@everyone", "everyone")
+        role_mentions = str([role.mention for role in ctx.message.author.roles]).replace("[", "").replace("]", "").replace("'", "").replace(f"{ctx.message.guild.default_role.mention}, ", "@everyone, ")
         E = discord.Embed(description=role_mentions, colour=0xE9A72F)
         await ctx.send(embed=E)
 
@@ -355,17 +367,15 @@ class GeneralCommands:
     
     @commands.command(aliases=["coin", "flipacoin"])
     async def coinflip(self, ctx):
-        flip = random.choice(["The coin landed on heads💰", "The coin landed on tails💰"])
+        flip = random.choice(["The coin landed on **heads**💰", "The coin landed on **tails**💰"])
         await ctx.send(f"{flip}")
 
     @commands.command(aliases=["pong", "latency"])
     async def ping(self, ctx):
-        start = time.perf_counter()
-        message = await ctx.send('Ping...')
-        end = time.perf_counter()
-        duration = (end - start) * 1000
-
-        await message.edit(content='Pong! {:.2f}ms :ping_pong: '.format(duration))
+        start = time.time() * 1000
+        msg = await ctx.message.channel.send("Pong!")
+        end = time.time() * 1000
+        await msg.edit(content=f"Pong! `{(str(int(round(end-start, 0))))}ms` :ping_pong:")
     
     @commands.command(aliases=["waffle", "gif"])
     async def wafflegif(self, ctx):
@@ -376,13 +386,22 @@ class GeneralCommands:
         embed.set_footer(icon_url=owneravi.avatar_url, text="Wafflebot by Alpha#5960")
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["rockpaperscissors", "rock", "paper", "scissors"])
-    async def rps(self, ctx, choice = None):
-        if choice == None:
-            error = discord.Embed(title="Error:", description="You didn't choose one of the 3 choices(Rock, Paper & Scissors).\n**Usage:** `w/rps [choice]`\n**Example:** `w/rps rock`", color=0xE73C24)
-            await ctx.send(embed=error)
+    @commands.command()
+    async def rpstest(self, ctx):
         rps = random.choice(["Rock", "Paper", "Scissors"])
-        if choice == "paper":
+        await ctx.message.add_reaction(":rock:499292163192913930")
+        await ctx.message.add_reaction(":paper:499292163079929875")
+        await ctx.message.add_reaction(":scissorstest:499292163444572190")
+        
+        def check(reaction, user):
+            return user == ctx.message.author and str(reaction.emoji) == ':paper:499292163079929875'
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+        except asyncio.TimeoutError:
+            await ctx.send("You spent to long adding a reaction")
+            await ctx.message.delete()
+
+        if reaction.emoji == ":paper:499292163079929875":
             if rps == "Rock":
                 embed = discord.Embed(title=f"You chose Paper, I chose {rps}", description="**Paper** beats **rock**, which means you win!", color=0x15c513)
                 await ctx.send(embed=embed)
@@ -392,7 +411,16 @@ class GeneralCommands:
             if rps == "Paper":
                 embed = discord.Embed(title=f"You chose Paper, I chose {rps}", description="It's a tie, which means no one wins!", color=0xE9A72F)
                 await ctx.send(embed=embed)
-        if choice == "rock":
+        
+        def check2(reaction, user):
+            paper_emoji = self.bot.get_emoji(499292163192913930)
+            return user == ctx.message.author and str(reaction.emoji) == paper_emoji
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+        except asyncio.TimeoutError:
+            await ctx.send("You spent to long adding a reaction")
+            await ctx.message.delete()
+        if reaction.emoji == ":rock:499292163192913930":
             if rps == "Rock":
                 embed = discord.Embed(title=f"You chose Rock, I chose {rps}", description="It's a tie, which means no one wins!", color=0xE9A72F)
                 await ctx.send(embed=embed)
@@ -402,7 +430,51 @@ class GeneralCommands:
             if rps == "Paper":
                 embed = discord.Embed(title=f"You chose Rock, I chose {rps}", description="**Paper** beats **rock**, which means I win!", color=0xE73C24)
                 await ctx.send(embed=embed)
-        if choice == "scissors":
+
+        def check3(reaction, user):
+            return user == ctx.message.author and str(reaction.emoji) == '<:rock:499292163192913930>'
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+        except asyncio.TimeoutError:
+            await ctx.send("You spent to long adding a reaction")
+            await ctx.message.delete()
+        if reaction.emoji == ":scissorstest:499292163444572190":
+            if rps == "Rock":
+                embed = discord.Embed(title=f"You chose Scissors, I chose {rps}", description="**Rock** beats **scissors**, which means I win!", color=0xE73C24)
+                await ctx.send(embed=embed)
+            if rps == "Scissors":
+                embed = discord.Embed(title=f"You chose Scissors, I chose {rps}", description="It's a tie, which means no one wins!", color=0xE9A72F)
+                await ctx.send(embed=embed)
+            if rps == "Paper":
+                embed = discord.Embed(title=f"You chose Scissors, I chose {rps}", description="**Scissors** beat **paper**, which means you win!", color=0x15c513)
+                await ctx.send(embed=embed)
+
+    @commands.command(aliases=["rockpaperscissors", "rock", "paper", "scissors"])
+    async def rps(self, ctx, choice = None):
+        if choice == None:
+            await ctx.send(":x: - You forgot to pick 1 of the 3 choices (rock, paper, scissors)")
+        rps = random.choice(["Rock", "Paper", "Scissors"])
+        if choice.upper() == "PAPER":
+            if rps == "Rock":
+                embed = discord.Embed(title=f"You chose Paper, I chose {rps}", description="**Paper** beats **rock**, which means you win!", color=0x15c513)
+                await ctx.send(embed=embed)
+            if rps == "Scissors":
+                embed = discord.Embed(title=f"You chose Paper, I chose {rps}", description="**Scissors** beat **paper**, which means I win!", color=0xE73C24)
+                await ctx.send(embed=embed)
+            if rps == "Paper":
+                embed = discord.Embed(title=f"You chose Paper, I chose {rps}", description="It's a tie, which means no one wins!", color=0xE9A72F)
+                await ctx.send(embed=embed)
+        if choice.upper() == "ROCK":
+            if rps == "Rock":
+                embed = discord.Embed(title=f"You chose Rock, I chose {rps}", description="It's a tie, which means no one wins!", color=0xE9A72F)
+                await ctx.send(embed=embed)
+            if rps == "Scissors":
+                embed = discord.Embed(title=f"You chose Rock, I chose {rps}", description="**Rock** beats **scissors**, which means you win!", color=0x15c513)
+                await ctx.send(embed=embed)
+            if rps == "Paper":
+                embed = discord.Embed(title=f"You chose Rock, I chose {rps}", description="**Paper** beats **rock**, which means I win!", color=0xE73C24)
+                await ctx.send(embed=embed)
+        if choice.upper() == "SCISSORS":
             if rps == "Rock":
                 embed = discord.Embed(title=f"You chose Scissors, I chose {rps}", description="**Rock** beats **scissors**, which means I win!", color=0xE73C24)
                 await ctx.send(embed=embed)
@@ -416,8 +488,7 @@ class GeneralCommands:
     @commands.command(aliases=["wikipedia", "search", "libary", "wikisearch"])
     async def wiki(self, ctx, *, search: str = None):
         if search == None:
-            error = discord.Embed(title="Error:", description="You didn't sepcify a search request\n**Usage:** `w/rps [search]`\n**Example:** `w/wiki sausage`", color=0xE73C24)
-            await ctx.send(embed=error)
+            await ctx.send(":x: - You forgot to give me a search")
         else:
             print("I'm called!")
             query = search
@@ -431,15 +502,12 @@ class GeneralCommands:
         wikipage = None
         lookup = True
         disambiguation = False
-        print("printout")
         wikipedia.set_lang(lang)
         try:
             wikipage = wikipedia.page(query)
-            print("I found directly")
         except wikipedia.PageError:
             embe = discord.Embed(title="Error:", description="Cant access by default. Trying to search", color=0xE73C24)
             await ctx.send(embed=embe)
-            print("Can't access by default. Trying to search")
         except wikipedia.DisambiguationError:
             embedd = discord.Embed(title="Error:", description="This search leads to a disambiguation page. Please be more specific.", color=0xE73C24)
             await ctx.send(embed=embedd)

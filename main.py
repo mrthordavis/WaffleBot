@@ -2,17 +2,24 @@ import discord
 from discord.ext import commands
 import math
 import asyncio
-import random
 from datetime import datetime
 
-startup_extensions = ["commands", "staff", "events", "music", "admin", "help"]
+startup_extensions = ["commands", "staff", "events", "music", "admin", "help", "errorhandler"]
 
 #Sql
 import sqlite3
 
 conn = sqlite3.connect("my_prefix")
 
+conn = sqlite3.connect("moderation")
+
 c = conn.cursor()
+
+c.execute("""CREATE TABLE IF NOT EXISTS moderation(
+    user_id BIGINT PRIMARY KEY,
+    guild_id BIGINT,
+    warns_int INT)
+""")
 
 conn.commit()
 
@@ -24,7 +31,8 @@ def bot_prefix(bot, ctx):
         #gotta create the table
         c.execute("""CREATE TABLE IF NOT EXISTS my_prefix(
             prefix VARCHAR, 
-            guild_id BIGINT PRIMARY KEY)""")
+            guild_id BIGINT PRIMARY KEY)
+            """)
         #loading the prefix
         xprefix = c.execute("SELECT prefix FROM my_prefix WHERE guild_id=?",(ctx.guild.id,)).fetchall()
         #If No Value
@@ -48,8 +56,8 @@ async def status_task():
     while True:
         await bot.change_presence(activity=discord.Game(name=f"On {len(bot.guilds)} Servers"))
         await asyncio.sleep(10)
-        await bot.change_presence(activity=discord.Game(name="Prefix = w/"))
-        await asyncio.sleep(10)
+        #await bot.change_presence(activity=discord.Game(name="Prefix = w/"))
+        #await asyncio.sleep(10)
         await bot.change_presence(activity=discord.Game(name=f"With {len(bot.users)} Users"))
         await asyncio.sleep(10)
         await bot.change_presence(activity=discord.Game(name="w/help"))
@@ -63,7 +71,17 @@ async def on_ready():
     print("---------")
     bot.loop.create_task(status_task())
 
-@bot.command(aliases=["prefix", "newprefix", "new_prefix", "set_prefix", "changeprefix"])
+#Wth is this
+@bot.command()
+async def warn(ctx, user: discord.Member):
+    warn = c.execute("SELECT user_id FROM moderation WHERE guild_id=?",(ctx.guild.id)).fetchall()
+    if warn != [] or None:
+        await ctx.send("test")
+    else:
+        c.execute("INSERT INTO moderation VALUES(?,?,?)",(user.id, ctx.guild.id, 1))
+        print("test")
+
+@bot.command(aliases=["newprefix", "new_prefix", "set_prefix", "changeprefix"])
 @commands.check(guild_owner)
 async def setprefix(ctx, prefix = None):
     if prefix is None:
@@ -82,37 +100,42 @@ async def setprefix(ctx, prefix = None):
 
             await ctx.send(f":white_check_mark: - Your prefix has been added to the databse and is now: `{prefix}`")
 
-@bot.command()
-async def load(ctx, extension_name : str):
-    """Loads an extension."""
-    if ctx.message.author.id == 322449414142558208:
-        try:
-            bot.load_extension(extension_name)
-        except (AttributeError, ImportError) as e:
-            await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-            return
-        embed = discord.Embed(color=0x15c513)
-        embed.add_field(name="Cog loaded.", value=f"Successfully loaded {extension_name}!")
-        send = await ctx.send(embed=embed)
-        await send.add_reaction(emoji="👌")
-    else:
-        error = discord.Embed(color=0xE73C24)
-        error.add_field(name="Error:", value="You don't have permission to do that!")
-        await ctx.send(embed=error)
+@bot.command(aiases=["currentprefix"])
+async def prefix(ctx):
+    prefix = c.execute("SELECT prefix FROM my_prefix WHERE guild_id=?",(ctx.guild.id,)).fetchall()
+    await ctx.send(f"The current prefix in the guild is: `{prefix[0]}`")
 
 @bot.command()
+@commands.is_owner()
+async def load(ctx, extension_name : str):
+    """Loads an extension."""
+    if ctx.guild.me.guild_permissions.add_reactions:
+            try:
+                bot.load_extension(extension_name)
+            except (AttributeError, ImportError) as e:
+                await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+                return
+            embed = discord.Embed(color=0x15c513)
+            embed.add_field(name="Cog loaded.", value=f"Successfully loaded {extension_name}!")
+            send = await ctx.send(embed=embed)
+            #This part needs testing
+            if ctx.guild.me.guild_permissions.add_reactions:
+                await send.add_reaction(emoji="👌")
+            else:
+                return
+
+@bot.command()
+@commands.is_owner()
 async def unload(ctx, extension_name : str):
     """Unloads an extension."""
-    if ctx.message.author.id == 322449414142558208:
-        bot.unload_extension(extension_name)
-        embed = discord.Embed(color=0x15c513)
-        embed.add_field(name="Cog unloaded", value=f"Successfully unloaded {extension_name}")
-        send = await ctx.send(embed=embed)
+    bot.unload_extension(extension_name)
+    embed = discord.Embed(color=0x15c513)
+    embed.add_field(name="Cog unloaded", value=f"Successfully unloaded {extension_name}")
+    send = await ctx.send(embed=embed)
+    if ctx.guild.me.guild_permissions.add_reactions:
         await send.add_reaction(emoji="👌")
     else:
-        error = discord.Embed(color=0xE73C24)
-        error.add_field(name="Error:", value="You don't have permission to do that!")
-        await ctx.send(embed=error)
+        return
 
 @bot.command(aliases=["reload"])
 async def reloading(ctx, extension_name : str):
@@ -136,6 +159,7 @@ async def reloading(ctx, extension_name : str):
 
 @bot.command(aliases=["ut", "wafflebotut", "wafflebotuptime"])
 async def uptime(ctx):
+    #quick mafs
     delta_uptime = datetime.utcnow() - bot.launch_time
     hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
@@ -152,6 +176,7 @@ for extension in startup_extensions:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
 
+#Loads token from the token file
 with open('token.txt') as fp:
     TOKEN = fp.read().strip()
 bot.run(TOKEN, reconnect=True)

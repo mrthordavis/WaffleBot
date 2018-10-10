@@ -213,8 +213,7 @@ class Music:
             except discord.HTTPException:
                 pass
         elif isinstance(error, InvalidVoiceChannel):
-            embed = discord.Embed(title="Error:", description="Error connecting to Voice Channel. Please make sure you are in a voice channel")
-            await ctx.send(embed=embed)
+            await ctx.send(":x: - Make sure that you are connected to a voice channel")
 
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
@@ -293,7 +292,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_playing():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
         elif vc.is_paused():
             return
 
@@ -306,7 +305,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
         elif not vc.is_paused():
             return
 
@@ -319,7 +318,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
 
         if vc.is_paused():
             pass
@@ -335,7 +334,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently connected to voice!', delete_after=20)
+            return await ctx.send(':x: - I am not currently connected to voice!', delete_after=20)
 
         player = self.get_player(ctx)
         if player.queue.empty():
@@ -355,11 +354,11 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently connected to voice!', delete_after=20)
+            return await ctx.send(':x: - I am not currently connected to voice!', delete_after=20)
 
         player = self.get_player(ctx)
         if not player.current:
-            return await ctx.send('I am not currently playing anything!')
+            return await ctx.send(':x: - I am not currently playing anything!')
 
         try:
             # Remove our previous now_playing message.
@@ -384,7 +383,7 @@ class Music:
             return await ctx.send('I am not currently connected to voice!', delete_after=20)
 
         if not 0 < vol < 101:
-            return await ctx.send('Please enter a value between 1 and 100.')
+            return await ctx.send(':x: - Please enter a value between 1 and 100.')
 
         player = self.get_player(ctx)
 
@@ -403,7 +402,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
 
         await self.cleanup(ctx.guild)
 
