@@ -30,7 +30,7 @@ def bot_prefix(bot, ctx):
     else:
         #gotta create the table
         c.execute("""CREATE TABLE IF NOT EXISTS my_prefix(
-            prefix VARCHAR, 
+            prefix VARCHAR,
             guild_id BIGINT PRIMARY KEY)
             """)
         #loading the prefix
@@ -71,16 +71,6 @@ async def on_ready():
     print("---------")
     bot.loop.create_task(status_task())
 
-#Wth is this
-@bot.command()
-async def warn(ctx, user: discord.Member):
-    warn = c.execute("SELECT user_id FROM moderation WHERE guild_id=?",(ctx.guild.id)).fetchall()
-    if warn != [] or None:
-        await ctx.send("test")
-    else:
-        c.execute("INSERT INTO moderation VALUES(?,?,?)",(user.id, ctx.guild.id, 1))
-        print("test")
-
 @bot.command(aliases=["newprefix", "new_prefix", "set_prefix", "changeprefix"])
 @commands.check(guild_owner)
 async def setprefix(ctx, prefix = None):
@@ -100,10 +90,43 @@ async def setprefix(ctx, prefix = None):
 
             await ctx.send(f":white_check_mark: - Your prefix has been added to the databse and is now: `{prefix}`")
 
-@bot.command(aiases=["currentprefix"])
-async def prefix(ctx):
-    prefix = c.execute("SELECT prefix FROM my_prefix WHERE guild_id=?",(ctx.guild.id,)).fetchall()
-    await ctx.send(f"The current prefix in the guild is: `{prefix[0]}`")
+@bot.command()
+@commands.is_owner()
+async def botpause(ctx):
+    msg = await ctx.send("Are you sure you want to pause the bot?")
+    await msg.add_reaction(emoji="✅")
+    await msg.add_reaction(emoji="❌")
+
+    def check(_reaction, _user):
+        return _user == ctx.message.author and str(_reaction.emoji) == '✅'
+
+    try:
+        _reaction, _user = await bot.wait_for('reaction_add', timeout=10.0, check=check)
+    except asyncio.TimeoutError:
+        await ctx.send(':x: - You took to long adding a reaction')
+    else:
+        for extension in startup_extensions:
+            bot.unload_extension(extension)
+        await ctx.send(":white_check_mark: - Successfully paused the bot")
+
+@bot.command()
+@commands.is_owner()
+async def botunpause(ctx):
+    msg = await ctx.send("Are you sure you want to unpause the bot?")
+    await msg.add_reaction(emoji="✅")
+    await msg.add_reaction(emoji="❌")
+
+    def check(_reaction, _user):
+        return _user == ctx.message.author and str(_reaction.emoji) == '✅'
+
+    try:
+        _reaction, _user = await bot.wait_for('reaction_add', timeout=10.0, check=check)
+    except asyncio.TimeoutError:
+        await ctx.send(':x: - You took to long adding a reaction')
+    else:
+        for extension in startup_extensions:
+            bot.load_extension(extension)
+        await ctx.send(":white_check_mark: - Successfully unpaused the bot")
 
 @bot.command()
 @commands.is_owner()

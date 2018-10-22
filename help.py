@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import asyncio
-from main import bot_prefix
 
 class Help:
     def __init__(self, bot):
@@ -14,7 +13,7 @@ class Help:
 
             embed = discord.Embed(color=0xE9A72F)
             embed.set_author(name="[1/4]")
-            embed.add_field(name=":unlock:Info Commands:unlock:", value="**w/roles** - Displays all avaliable roles in the server\n**w/pfp <@name>** - Shows the persons profile picture\n**w/info <@name>** - This command shows you some information about yourself\n**w/serverinfo** - Displays some information about the server\n**w/uptime** - Displays how long the bot has been running for\n**w/links** - Sends the support server link and the bot invite link\n**w/google <search>** - Gives you an URL for your search\n**w/createinvite <uses>** - Use this command to create a 24 hour invite to a server\n**w/wiki <search>** - Searches Wikipedia(Keep in mind that this feature might not be able to find your search)\n**w/members** - Shows how many members are in the server\n**w/ftn <platform> <username>** - Retrieves your ~~great~~ fortnite stats", inline=True)
+            embed.add_field(name=":unlock:Info Commands:unlock:", value="**w/roles** - Displays all avaliable roles in the server\n**w/pfp <@name>** - Shows the persons profile picture\n**w/info <@name>** - This command shows you some information about yourself\n**w/serverinfo** - Displays some information about the server\n**w/uptime** - Displays how long the bot has been running for\n**w/links** - Sends the support server link and the bot invite link\n**w/google <search>** - Gives you an URL for your search\n**w/createinvite <uses>** - Use this command to create a 24 hour invite to a server\n**w/wiki <search>** - Searches Wikipedia(Keep in mind that this feature might not be able to find your search)\n**w/members** - Shows how many members are in the server\n**w/ftn <platform> <username>** - Retrieves your ~~great~~ fortnite stats".replace("w/", ctx.prefix), inline=True)
             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
             owneravi = self.bot.get_user(322449414142558208)
@@ -33,7 +32,7 @@ class Help:
             await help.add_reaction(emoji="🇽")
             await help.add_reaction(emoji="▶")
             counter = 0
-            for each in range(0, 30001):
+            for _each in range(0, 30001):
                 try:
                     reac, user = await self.bot.wait_for('reaction_add', check=check, timeout=0.01)
                     if counter <= 0:
@@ -48,7 +47,7 @@ class Help:
                             await help.remove_reaction(reac, user)
                             embed = discord.Embed(color=0xE9A72F)
                             embed.set_author(name="[2/4]")
-                            embed.add_field(name=":lock:Staff Commands:lock:", value="**:construction: UNDER CONSTRUCTION :construction:**", inline=False)
+                            embed.add_field(name=":lock:Staff Commands:lock:", value="**:construction: UNDER CONSTRUCTION :construction:**".replace("w/", ctx.prefix), inline=False)
                             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
                             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
                             owneravi = self.bot.get_user(322449414142558208)
@@ -59,7 +58,7 @@ class Help:
                             await help.remove_reaction(reac, user)
                             embed = discord.Embed(color=0xE9A72F)
                             embed.set_author(name="[3/4]")
-                            embed.add_field(name=":pushpin:General Commands:pushpin:", value="**w/wafflegif** - Sends a 'wafflegif'\n**w/joke** - Tells you a joke\n**w/ping** Pong! :ping_pong:\n**w/rps <choice>** - Play rock, paper, scissors against the bot\n**w/8ball** - Ask the mysterious 8Ball anything and it will reply\n**w/diceroll** - The bot will roll a dice for you\n**w/coinflip** - The bot will flip a coin for you", inline=True)
+                            embed.add_field(name=":pushpin:General Commands:pushpin:", value="**w/wafflegif** - Sends a 'wafflegif'\n**w/joke** - Tells you a joke\n**w/ping** Pong! :ping_pong:\n**w/rps <choice>** - Play rock, paper, scissors against the bot\n**w/8ball** - Ask the mysterious 8Ball anything and it will reply\n**w/diceroll** - The bot will roll a dice for you\n**w/coinflip** - The bot will flip a coin for you".replace("w/", ctx.prefix), inline=True)
                             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
                             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
                             owneravi = self.bot.get_user(322449414142558208)
@@ -70,7 +69,7 @@ class Help:
                             await help.remove_reaction(reac, user)
                             embed = discord.Embed(color=0xE9A72F)
                             embed.set_author(name="[4/4]")
-                            embed.add_field(name=":musical_note:Music commands:musical_note:", value="**w/play <song name/title>** - Plays the given song\n**w/pause & w/resume** - Pauses and resumes the music\n**w/volume <1-100>** - Changes the volume(use numbers from 1-100)\n**w/playing** - Displays the song that is currently being played\n**w/queue** - Shows you what songs are currently in the queue\n**w/skip** - Skips the song currently playing", inline=True)
+                            embed.add_field(name=":musical_note:Music commands:musical_note:", value="**w/play <song name/title>** - Plays the given song\n**w/pause & w/resume** - Pauses and resumes the music\n**w/volume <1-100>** - Changes the volume(use numbers from 1-100)\n**w/playing** - Displays the song that is currently being played\n**w/queue** - Shows you what songs are currently in the queue\n**w/skip** - Skips the song currently playing".replace("w/", ctx.prefix), inline=True)
                             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
                             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
                             owneravi = self.bot.get_user(322449414142558208)
@@ -83,7 +82,7 @@ class Help:
                             await help.remove_reaction(reac, user)
                             embed = discord.Embed(color=0xE9A72F)
                             embed.set_author(name="[1/4]")
-                            embed.add_field(name=":unlock:Info Commands:unlock:", value="**w/roles** - Displays all avaliable roles in the server\n**w/pfp <@name>** - Shows the persons profile picture\n**w/info <@name>** - This command shows you some information about yourself\n**w/serverinfo** - Displays some information about the server\n**w/uptime** - Displays how long the bot has been running for\n**w/links** - Sends the support server link and the bot invite link\n**w/google <search>** - Gives you an URL for your search\n**w/createinvite <uses>** - Use this command to create a 24 hour invite to a server\n**w/wiki <search>** - Searches Wikipedia(Keep in mind that this feature might not be able to find your search)\n**w/members** - Shows how many members are in the server\n**w/ftn <platform> <username>** - Retrieves your ~~great~~ fortnite stats", inline=True)
+                            embed.add_field(name=":unlock:Info Commands:unlock:", value="**w/roles** - Displays all avaliable roles in the server\n**w/pfp <@name>** - Shows the persons profile picture\n**w/info <@name>** - This command shows you some information about yourself\n**w/serverinfo** - Displays some information about the server\n**w/uptime** - Displays how long the bot has been running for\n**w/links** - Sends the support server link and the bot invite link\n**w/google <search>** - Gives you an URL for your search\n**w/createinvite <uses>** - Use this command to create a 24 hour invite to a server\n**w/wiki <search>** - Searches Wikipedia(Keep in mind that this feature might not be able to find your search)\n**w/members** - Shows how many members are in the server\n**w/ftn <platform> <username>** - Retrieves your ~~great~~ fortnite stats".replace("w/", ctx.prefix), inline=True)
                             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
                             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
                             owneravi = self.bot.get_user(322449414142558208)
@@ -95,7 +94,7 @@ class Help:
                             await help.remove_reaction(reac, user)
                             embed = discord.Embed(color=0xE9A72F)
                             embed.set_author(name="[2/4]")
-                            embed.add_field(name=":lock:Staff Commands:lock:", value="**:construction: UNDER CONSTRUCTION :construction:**", inline=False)
+                            embed.add_field(name=":lock:Staff Commands:lock:", value="**:construction: UNDER CONSTRUCTION :construction:**".replace("w/", ctx.prefix), inline=False)
                             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
                             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
                             owneravi = self.bot.get_user(322449414142558208)
@@ -107,7 +106,7 @@ class Help:
                             await help.add_reaction("▶")
                             embed = discord.Embed(color=0xE9A72F)
                             embed.set_author(name="[3/4]")
-                            embed.add_field(name=":pushpin:General Commands:pushpin:", value="**w/wafflegif** - Sends a 'wafflegif'\n**w/joke** - Tells you a joke\n**w/ping** Pong! :ping_pong:\n**w/rps <choice>** - Play rock, paper, scissors against the bot\n**w/8ball** - Ask the mysterious 8Ball anything and it will reply\n**w/diceroll** - The bot will roll a dice for you\n**w/coinflip** - The bot will flip a coin for you", inline=True)
+                            embed.add_field(name=":pushpin:General Commands:pushpin:", value="**w/wafflegif** - Sends a 'wafflegif'\n**w/joke** - Tells you a joke\n**w/ping** Pong! :ping_pong:\n**w/rps <choice>** - Play rock, paper, scissors against the bot\n**w/8ball** - Ask the mysterious 8Ball anything and it will reply\n**w/diceroll** - The bot will roll a dice for you\n**w/coinflip** - The bot will flip a coin for you".replace("w/", ctx.prefix), inline=True)
                             embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
                             embed.add_field(name=":paperclip:Help Server:paperclip:", value="[Join here!](https://discord.gg/6M83Wvz)", inline=True)
                             owneravi = self.bot.get_user(322449414142558208)
@@ -132,11 +131,11 @@ class Help:
                     pass
         if not ctx.guild.me.guild_permissions.add_reactions:
             embed = discord.Embed(color=0xE9A72F)
-            embed.add_field(name=":unlock:Info Commands:unlock:", value="**w/roles** - Displays all avaliable roles in the server\n**w/pfp <@name>** - Shows the persons profile picture\n**w/info <@name>** - This command shows you some information about yourself\n**w/serverinfo** - Displays some information about the server\n**w/uptime** - Displays how long the bot has been running for\n**w/links** - Sends the support server link and the bot invite link\n**w/google <search>** - Gives you an URL for your search\n**w/createinvite <uses>** - Use this command to create a 24 hour invite to a server\n**w/wiki <search>** - Searches Wikipedia(Keep in mind that this feature might not be able to find your search)\n**w/members** - Shows how many members are in the server\n**w/ftn <platform> <username>** - Retrieves your ~~great~~ fortnite stats", inline=True)
-            embed.add_field(name=":lock:Staff Commands:lock:", value="**:construction: UNDER CONSTRUCTION :construction:**", inline=False)
-            embed.add_field(name=":pushpin:General Commands:pushpin:", value="**w/wafflegif** - Sends a 'wafflegif'\n**w/joke** - Tells you a joke\n**w/ping** Pong! :ping_pong:\n**w/rps <choice>** - Play rock, paper, scissors against the bot\n**w/8ball** - Ask the mysterious 8Ball anything and it will reply\n**w/diceroll** - The bot will roll a dice for you\n**w/coinflip** - The bot will flip a coin for you", inline=True)
-            embed.add_field(name=":musical_note:Music commands:musical_note:", value="**w/play <song name/title>** - Plays the given song\n**w/pause & w/resume** - Pauses and resumes the music\n**w/volume <1-100>** - Changes the volume(use numbers from 1-100)\n**w/playing** - Displays the song that is currently being played\n**w/queue** - Shows you what songs are currently in the queue\n**w/skip** - Skips the song currently playing", inline=True)
-            embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")                        
+            embed.add_field(name=":unlock:Info Commands:unlock:", value="**w/roles** - Displays all avaliable roles in the server\n**w/pfp <@name>** - Shows the persons profile picture\n**w/info <@name>** - This command shows you some information about yourself\n**w/serverinfo** - Displays some information about the server\n**w/uptime** - Displays how long the bot has been running for\n**w/links** - Sends the support server link and the bot invite link\n**w/google <search>** - Gives you an URL for your search\n**w/createinvite <uses>** - Use this command to create a 24 hour invite to a server\n**w/wiki <search>** - Searches Wikipedia(Keep in mind that this feature might not be able to find your search)\n**w/members** - Shows how many members are in the server\n**w/ftn <platform> <username>** - Retrieves your ~~great~~ fortnite stats".replace("w/", ctx.prefix), inline=True)
+            embed.add_field(name=":lock:Staff Commands:lock:", value="**:construction: UNDER CONSTRUCTION :construction:**".replace("w/", ctx.prefix), inline=False)
+            embed.add_field(name=":pushpin:General Commands:pushpin:", value="**w/wafflegif** - Sends a 'wafflegif'\n**w/joke** - Tells you a joke\n**w/ping** Pong! :ping_pong:\n**w/rps <choice>** - Play rock, paper, scissors against the bot\n**w/8ball** - Ask the mysterious 8Ball anything and it will reply\n**w/diceroll** - The bot will roll a dice for you\n**w/coinflip** - The bot will flip a coin for you".replace("w/", ctx.prefix), inline=True)
+            embed.add_field(name=":musical_note:Music commands:musical_note:", value="**w/play <song name/title>** - Plays the given song\n**w/pause & w/resume** - Pauses and resumes the music\n**w/volume <1-100>** - Changes the volume(use numbers from 1-100)\n**w/playing** - Displays the song that is currently being played\n**w/queue** - Shows you what songs are currently in the queue\n**w/skip** - Skips the song currently playing".replace("w/", ctx.prefix), inline=True)
+            embed.add_field(name=":incoming_envelope:Invite me to your server:incoming_envelope:", value="[Click Here!](https://discordapp.com/oauth2/authorize?client_id=430365624217108484&permissions=8&scope=bot)")
             await ctx.send(embed=embed)
 
 def setup(bot):
