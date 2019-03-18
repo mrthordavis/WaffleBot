@@ -23,6 +23,7 @@ from async_timeout import timeout
 from functools import partial
 from youtube_dl import YoutubeDL
 
+from utility import getEmoji
 
 ytdlopts = {
     'format': 'bestaudio/best',
@@ -105,7 +106,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return cls(discord.FFmpegPCMAudio(data['url']), data=data, requester=requester)
 
 
-class MusicPlayer:
+class MusicPlayer(commands.Cog):
     """A class which is assigned to each guild using the bot for Music.
     This class implements a queue and loop, which allows for different guilds to listen to different playlists
     simultaneously.
@@ -177,7 +178,7 @@ class MusicPlayer:
         return self.bot.loop.create_task(self._cog.cleanup(guild))
 
 
-class Music:
+class Music(commands.Cog):
     """Music related commands."""
 
     __slots__ = ('bot', 'players')
@@ -209,11 +210,11 @@ class Music:
         """A local error handler for all errors arising from commands in this cog."""
         if isinstance(error, commands.NoPrivateMessage):
             try:
-                return await ctx.send('**This command can not be used in Private Messages.**')
+                return await ctx.send(f"{getEmoji('red_tick')} - This command can't be used in DM's")
             except discord.HTTPException:
                 pass
         elif isinstance(error, InvalidVoiceChannel):
-            await ctx.send(":x: - Make sure that you are connected to a voice channel")
+            await ctx.send(f"{getEmoji('red_tick')} - Make sure that you are connected to a voice channel")
 
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
@@ -242,7 +243,7 @@ class Music:
             try:
                 channel = ctx.author.voice.channel
             except AttributeError:
-                raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
+                raise InvalidVoiceChannel(f'{getEmoji("red_tick")} - No channel to join. Please either specify a valid channel or join one.')
 
         vc = ctx.voice_client
 
@@ -292,7 +293,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_playing():
-            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently playing anything!', delete_after=20)
         elif vc.is_paused():
             return
 
@@ -305,7 +306,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently playing anything!', delete_after=20)
         elif not vc.is_paused():
             return
 
@@ -318,7 +319,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently playing anything!', delete_after=20)
 
         if vc.is_paused():
             pass
@@ -334,7 +335,7 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send(':x: - I am not currently connected to voice!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently connected to voice!', delete_after=20)
 
         player = self.get_player(ctx)
         if player.queue.empty():
@@ -354,11 +355,11 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send(':x: - I am not currently connected to voice!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently connected to voice!', delete_after=20)
 
         player = self.get_player(ctx)
         if not player.current:
-            return await ctx.send(':x: - I am not currently playing anything!')
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently playing anything!')
 
         try:
             # Remove our previous now_playing message.
@@ -380,10 +381,10 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently connected to voice!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently connected to voice!', delete_after=20)
 
         if not 0 < vol < 101:
-            return await ctx.send(':x: - Please enter a value between 1 and 100.')
+            return await ctx.send(f'{getEmoji("red_tick")} - Please enter a value between 1 and 100.')
 
         player = self.get_player(ctx)
 
@@ -402,9 +403,10 @@ class Music:
         vc = ctx.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send(':x: - I am not currently playing anything!', delete_after=20)
+            return await ctx.send(f'{getEmoji("red_tick")} - I am not currently playing anything!', delete_after=20)
 
         await self.cleanup(ctx.guild)
+
 
 def setup(bot):
     bot.add_cog(Music(bot))
